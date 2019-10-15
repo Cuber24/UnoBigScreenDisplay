@@ -22,12 +22,14 @@ import sok from 'vue-socket.io'
 
 // const myHost = getIP() 
 // console.log(myHost)
-const myHost = ['127.0.0.1','192.168.1.10'][1]
+// 1本地 2局域网 3远程服务器
+const myHost = ['127.0.0.1:4000','192.168.1.10:4000','47.96.131.165'][1]
 
 Vue.use(ElementUI)
 Vue.use(new sok({
-  debug: false,
-  connection: `http://${myHost}:4000`,
+  debug: true,
+  // connection: `http://${myHost}`,
+  connection: `http://47.96.131.165`,
 }))
 
 Vue.config.productionTip = false

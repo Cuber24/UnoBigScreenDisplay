@@ -10,7 +10,7 @@
               <div :class="{pl:true,show_pl:posi==i&&!change_mod}"
                v-for="(item,i) in playerlst" 
                :key="item">
-                  <div class="pl_name" @click.stop="posi=i">{{item}}</div>
+                  <div class="pl_name" @click.stop="posi=i;change_mod=false">{{item}}</div>
                   <div class="del" @click.stop="del(i)" ><i class="el-icon-delete"></i></div>
               </div>
           </transition-group>
@@ -74,6 +74,10 @@
                 v-model="plus"
                 :step='20'></el-input-number>
             </div>
+            <div class="no3">
+                <p>刷新展示页面(会清空所有数据)</p>
+                <div @click.stop="refresh">刷新</div>
+            </div>
         </div>
     </transition>
 
@@ -105,7 +109,7 @@ export default {
       expl:100,
       plus:20,
       name:'',
-      change_mod:true,
+      change_mod:false,
       isActive:false,
       playerlst:[],
       playerlst_obj:{},
@@ -135,7 +139,9 @@ export default {
       },
       input_num(item){
           if(item=='←'){
-              this.score=this.score.substring(0,this.score.length-1)
+              if(this.score=='-'){null}
+              else{
+                  this.score=this.score.substring(0,this.score.length-1)}
           }
           else
           {
@@ -173,7 +179,7 @@ export default {
         if(this.name!=''){
             let a=this.name
             this.playerlst.splice(this.playerlst.length,0,this.name)
-            localStorage.player_lst=this.playerlst
+            localStorage.setItem('player_list',JSON.stringify(this.playerlst))
             this.$socket.emit("up_name", {name:a,fullscore:0})
             this.$set(this.playerlst_obj,a,0)
         }
@@ -184,16 +190,20 @@ export default {
     del(i){
         delete this.playerlst_obj[this.playerlst[i]]
         this.playerlst.splice(i,1)
-        localStorage.player_lst=this.playerlst
+        localStorage.setItem('player_list',JSON.stringify(this.playerlst))
         this.$socket.emit("del_ser", i)
 
     },
     excu_boom(){
         this.show_next_round=false
         this.$socket.emit("next_ser", 'next')
+        this.posi=0
     },
     clear_all(){
         this.$socket.emit("clear_ser", 'clear')
+    },
+    refresh(){
+        this.$socket.emit("refresh_ser", 'refresh')
     }
 
 
@@ -215,7 +225,7 @@ export default {
         setInterval(() => {
             this.$socket.emit("ex_to_ser", this.expl)
           }, 1000)
-
+       this.playerlst= JSON.parse(localStorage.getItem("player_list")||'[]')
 
     }
 
@@ -425,6 +435,29 @@ export default {
     font-size: 13px;
 }
 .no2 div:active{
+    background-color: rgb(147, 210, 252);
+}
+.no3{
+    color: white;
+    font-size: 20px;
+    padding: 20px;
+    height:70px;
+    border-bottom: solid rgb(250, 242, 242) 1px;
+}
+.no3 div{
+    position: absolute;
+    right:25px;
+    top:395px;
+    background-color: white;
+    height: 30px;
+    width: 130px;
+    text-align: center;
+    color: black;
+    line-height: 30px;
+    border-radius: 5px;
+    font-size: 13px;
+}
+.no3 div:active{
     background-color: rgb(147, 210, 252);
 }
 .input_name{

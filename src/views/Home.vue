@@ -4,7 +4,7 @@
     
     <div class="all"></div>
     <div class="up_all">
-      
+
       <div class="round_panel" >
         <div class="roundlst" v-for="round in round_lst" :key="round">{{round}}</div>
         </div>
@@ -105,6 +105,9 @@ export default {
         })
           }
         this.round_lst=[]
+      },
+      refresh(){
+        location. reload()
       }
   },
   
